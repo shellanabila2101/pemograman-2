@@ -1,0 +1,229 @@
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #e3f2fd;
+    margin: 0;
+    padding: 0;
+}
+
+/* JUDUL */
+
+h1{
+    color: #0d47a1;
+    margin-top: 30px;
+}
+
+h2{
+    color: #1565c0;
+}
+
+/* CONTAINER */
+
+.container{
+    width: 95%;
+    margin: auto;
+}
+
+/* MENU */
+
+nav{
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+nav ul{
+    list-style: none;
+    background: linear-gradient(to right, #1976d2, #42a5f5);
+    padding: 0;
+    margin: 0;
+    border-radius: 12px;
+    display: inline-block;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
+}
+
+nav ul li{
+    position: relative;
+    float: left;
+}
+
+nav ul li a{
+    display: block;
+    padding: 15px 25px;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+nav ul li:hover{
+    background: #0d47a1;
+}
+
+nav ul ul{
+    display: none;
+    position: absolute;
+    top: 50px;
+    left: 0;
+    background: #1565c0;
+    padding: 0;
+    min-width: 220px;
+    border-radius: 0 0 10px 10px;
+    z-index: 999;
+}
+
+nav ul li:hover > ul{
+    display: block;
+}
+
+nav ul ul li{
+    float: none;
+    border-bottom: 1px solid #64b5f6;
+}
+
+nav ul ul li a{
+    padding: 12px 20px;
+}
+
+nav ul ul li a:hover{
+    background: #0d47a1;
+}
+
+/* TABEL */
+
+table{
+    width: 90%;
+    background: white;
+    border-collapse: collapse;
+    margin-top: 20px;
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.2);
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+th{
+    background: #1976d2;
+    color: white;
+    padding: 15px;
+    text-align: center;
+}
+
+td{
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+tr:nth-child(even){
+    background-color: #f2f9ff;
+}
+
+tr:hover{
+    background-color: #d6ecff;
+}
+
+/* FORM */
+
+form{
+    width: 100%;
+}
+
+/* INPUT */
+
+input{
+    width: 250px;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #90caf9;
+    outline: none;
+}
+
+input:focus{
+    border: 1px solid #1976d2;
+    box-shadow: 0px 0px 5px #64b5f6;
+}
+
+/* BUTTON */
+
+input[type=submit],
+button{
+    background: #1976d2;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+input[type=submit]:hover,
+button:hover{
+    background: #0d47a1;
+}
+
+/* BUTTON EDIT */
+
+.edit-btn{
+    background: #43a047;
+}
+
+.edit-btn:hover{
+    background: #2e7d32;
+}
+
+/* BUTTON HAPUS */
+
+.hapus-btn{
+    background: #e53935;
+}
+
+.hapus-btn:hover{
+    background: #b71c1c;
+}
+
+/* LOGIN CONTAINER */
+
+.login-container{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* LOGIN BOX */
+
+.login-box{
+    background: white;
+    width: 350px;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0px 5px 20px rgba(0,0,0,0.2);
+    text-align: center;
+}
+
+/* INPUT LOGIN */
+
+.login-box input{
+    width: 90%;
+}
+
+/* BUTTON LOGIN */
+
+.login-box input[type=submit]{
+    width: 100%;
+    background: #1976d2;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.login-box input[type=submit]:hover{
+    background: #0d47a1;
+}
+
+/* CLEAR FLOAT MENU */
+
+nav::after{
+    content: "";
+    display: block;
+    clear: both;
+}
