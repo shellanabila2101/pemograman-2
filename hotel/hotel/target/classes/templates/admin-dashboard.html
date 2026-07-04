@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard & Financial Reports</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @media print {
+            body { background: white; color: black; }
+            .no-print, .btn, .navbar, #searchBar { display: none !important; }
+            .card { border: none !important; box-shadow: none !important; }
+            .table-responsive { overflow: visible !important; }
+            .print-header { display: block !important; text-align: center; margin-bottom: 30px; }
+        }
+        .print-header { display: none; }
+        .widget-card { border: none; }
+    </style>
+</head>
+<body class="bg-light">
+
+    <!-- NAVBAR ADMIN -->
+    <nav class="navbar navbar-dark bg-dark shadow-sm no-print">
+        <div class="container">
+            <span class="navbar-brand mb-0 h1 text-warning fw-bold">⚙️ Grand Hotel Financial Admin</span>
+            <span class="navbar-text text-white">
+                Logged in: <strong class="text-info" th:text="${session.adminSession}">Admin</strong> 
+                | <a th:href="@{/logout}" class="btn btn-danger btn-sm ms-2">Logout</a>
+            </span>
+        </div>
+    </nav>
+
+    <!-- KOP LAPORAN -->
+    <div class="print-header">
+        <h2 class="fw-bold">GRAND HOTEL FINANCIAL & RESERVATION REPORT</h2>
+        <p class="text-muted mb-0">Laporan Pendapatan Berdasarkan Transaksi Aktif</p>
+        <p class="small text-secondary">Dicetak pada: <span class="waktuCetak"></span></p>
+        <hr style="border: 2px solid black;">
+    </div>
+
+    <div class="container my-4">
+        
+        <div class="mb-3 text-end no-print">
+            <small class="text-muted fw-semibold">Waktu Sistem: <span class="waktuCetak"></span></small>
+        </div>
+
+        <!-- ROW 1: STATISTIK PENDAPATAN (Hanya menjumlahkan yang Sudah Bayar) -->
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3">
+                <div class="card bg-primary text-white widget-card shadow-sm">
+                    <div class="card-body py-4">
+                        <h6 class="text-uppercase text-white-50 fw-bold">Total Buku Kamar</h6>
+                        <h2 class="fw-bold mb-0" th:text="${#lists.size(listReservasi)} + ' Transaksi'">0 Transaksi</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="card bg-success text-white widget-card shadow-sm">
+                    <div class="card-body py-4">
+                        <h6 class="text-uppercase text-white-50 fw-bold">Total Pendapatan Masuk (Sudah Bayar)</h6>
+                        <h2 class="fw-bold mb-0" id="totalPendapatanTeks">Rp 0</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROW 2: TABEL LAPORAN KEUANGAN -->
+        <div class="card shadow border-0">
+            <div class="card-header bg-white py-3 d-flex align-items-center justify-content-between">
+                <h5 class="mb-0 fw-bold text-dark text-uppercase">📋 Rincian Billing & Invoice Tamu</h5>
+                <div class="d-flex gap-2 no-print">
+                    <input type="text" id="searchBar" class="form-control form-control-sm" placeholder="Cari nama tamu..." onkeyup="filterTable()">
+                    <button onclick="window.print()" class="btn btn-dark btn-sm px-3 fw-bold shadow-sm">🖨️ Cetak Laporan</button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped align-middle mb-0" id="reportTable">
+                        <thead class="table-dark">
+                            <tr>
+                                <th class="ps-3">ID Booking</th>
+                                <th>Nama Tamu</th>
+                                <th>Tipe Kamar</th>
+                                <th>Check-In / Out</th>
+                                <th class="text-end">Total Tagihan</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-center no-print">Aksi Operasional</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="res : ${listReservasi}">
+                                <td class="ps-3 fw-bold text-secondary" th:text="'#BK-' + ${res.id}">#BK-1</td>
+                                <td class="fw-semibold text-dark search-name" th:text="${res.namaTamu}">Nama</td>
+                                <td>
+                                    <span th:text="${res.tipeKamar}" class="badge bg-secondary">Tipe</span>
+                                    <small class="text-muted d-block" th:text="${res.tipeKamar == 'Standard' ? '@Rp 350.000' : (res.tipeKamar == 'Deluxe' ? '@Rp 600.000' : '@Rp 1.200.000')}"></small>
+                                </td>
+                                <td th:text="${res.tanggalCheckIn} + ' s/d ' + ${res.tanggalCheckOut}">Tanggal</td>
+                                <td class="text-end fw-bold text-primary biaya-kolom" 
+                                    th:data-harga="${res.totalBiaya != null ? res.totalBiaya : 0}"
+                                    th:data-status="${res.statusBayar}"
+                                    th:text="${res.totalBiaya != null} ? 'Rp ' + ${#numbers.formatInteger(res.totalBiaya, 3, 'POINT')} : 'Rp 0'">
+                                    Rp 0
+                                </td>
+                                <!-- Kolom Status Pembayaran -->
+                                <td class="text-center">
+                                    <span th:text="${res.statusBayar}" 
+                                          th:classappend="${res.statusBayar == 'Sudah Bayar' ? 'bg-success' : 'bg-danger'}" 
+                                          class="badge text-uppercase">Status</span>
+                                </td>
+                                <td class="text-center no-print">
+                                    <div class="d-flex gap-1 justify-content-center">
+                                        <!-- Tombol Konfirmasi Bayar (Hanya muncul jika statusnya Belum Bayar) -->
+                                        <a th:if="${res.statusBayar == 'Belum Bayar'}" 
+                                           th:href="@{/admin/konfirmasi-bayar/{id}(id=${res.id})}" 
+                                           class="btn btn-sm btn-success py-0 px-2 fw-semibold">
+                                            💳 Set Lunas
+                                        </a>
+                                        <a th:href="@{/admin/delete/{id}(id=${res.id})}" class="btn btn-outline-danger btn-sm py-0 px-2">🗑️ Hapus</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr id="emptyRow" th:if="${#lists.isEmpty(listReservasi)}">
+                                <td colspan="7" class="text-center text-muted py-4">Belum ada data transaksi masuk.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function filterTable() {
+            let input = document.getElementById("searchBar").value.toLowerCase();
+            let table = document.getElementById("reportTable");
+            let rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+            for (let i = 0; i < rows.length; i++) {
+                if(rows[i].id === "emptyRow") continue;
+                let nameCell = rows[i].getElementsByClassName("search-name")[0];
+                if (nameCell) {
+                    let textValue = nameCell.textContent || nameCell.innerText;
+                    rows[i].style.display = textValue.toLowerCase().indexOf(input) > -1 ? "" : "none";
+                }
+            }
+        }
+
+        // Hitung Pendapatan HANYA dari yang berstatus 'Sudah Bayar'
+        let totalMasuk = 0;
+        let elemenBiaya = document.getElementsByClassName("biaya-kolom");
+        for (let i = 0; i < elemenBiaya.length; i++) {
+            let status = elemenBiaya[i].getAttribute("data-status");
+            if (status === "Sudah Bayar") {
+                totalMasuk += parseInt(elemenBiaya[i].getAttribute("data-harga")) || 0;
+            }
+        }
+        document.getElementById("totalPendapatanTeks").innerText = "Rp " + totalMasuk.toLocaleString('id-ID');
+
+        const opsi = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+        const waktuSekarang = new Date().toLocaleDateString('id-ID', opsi);
+        const elemenWaktu = document.getElementsByClassName("waktuCetak");
+        for (let i = 0; i < elemenWaktu.length; i++) {
+            elemenWaktu[i].innerText = waktuSekarang + " WIB";
+        }
+    </script>
+</body>
+</html>

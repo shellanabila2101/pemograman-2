@@ -1,0 +1,19 @@
+<!-- Kolom Status Pembayaran -->
+<td class="text-center">
+    <span th:text="${res.statusBayar != null ? res.statusBayar : 'Belum Bayar'}" 
+          th:classappend="${res.statusBayar == 'Sudah Bayar' ? 'bg-success' : 'bg-danger'}" 
+          class="badge text-uppercase">Status</span>
+</td>
+
+<!-- Kolom Aksi Operasional -->
+<td class="text-center no-print">
+    <div class="d-flex gap-1 justify-content-center">
+        <!-- Tombol Set Lunas akan muncul jika statusnya null atau Belum Bayar -->
+        <a th:if="${res.statusBayar == null or res.statusBayar == 'Belum Bayar'}" 
+           th:href="@{/admin/konfirmasi-bayar/{id}(id=${res.id})}" 
+           class="btn btn-sm btn-success py-0 px-2 fw-semibold">
+            💳 Set Lunas
+        </a>
+        <a th:href="@{/admin/delete/{id}(id=${res.id})}" class="btn btn-outline-danger btn-sm py-0 px-2">🗑️ Hapus</a>
+    </div>
+</td>
